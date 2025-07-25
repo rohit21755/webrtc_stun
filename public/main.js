@@ -4,3 +4,7 @@ const userId = Math.round(Math.random() * 1000000)
 console.log(userId)
 // initialize the DOM
 uiUtils.initializeUi(userId)
+
+// establish a ws connectioin 
+
+const wsClient = new WebSocket(`/?userId=${userId}`)
