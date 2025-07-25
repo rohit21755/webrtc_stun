@@ -59,3 +59,22 @@ function closeModal() {
     infoModalContent.classList.add("hidden")
     infoModalContent.classList.remove("show")
 }
+
+export function LogToCustomConsole(message, color = "#FFFFFF", highlight = false, highlightColor = "#ffff83") {
+    const messageElement = document.createElement("div")
+    messageElement.classList.add("console-message")
+    messageElement.textContent = message
+    messageElement.style.color = color
+
+    if (highlight) {
+        messageElement.style.backgroundColor = highlightColor
+        messageElement.style.fontWeight = "bold"
+        messageElement.style.padding = "5px"
+        messageElement.style.borderRadius = "3px"
+        messageElement.style.transition = "background-color 0.5s ease"
+    }
+    // append our newly
+    consoleDisplay.appendChild(messageElement)
+    consoleDisplay.scrollTo = consoleDisplay.scrollHeight
+    
+}
