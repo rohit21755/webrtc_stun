@@ -1,5 +1,5 @@
 
-import { setUserID } from "./state.js";
+import { setUserID, getState, setRoom } from "./state.js";
 // selecting DOM elements 
 const user_session_id_element = document.getElementById("session_id_display");
 const infoModalButton = document.getElementById('info_modal_button');
@@ -9,7 +9,7 @@ const inputRoomNameElement = document.getElementById('input_room_channel_name');
 const joinRoomButton = document.getElementById('join_button');
 const createRoomButton = document.getElementById('create_room_button');
 const roomNameHeadingTag = document.getElementById('room_name_heading_tag');
-const landingPage = document.getElementById('landing_page_container');
+const landingPageContainer = document.getElementById('landing_page_container');
 const roomInterface = document.getElementById('room_interface');
 const messagesContainer = document.getElementById('messages');
 const messageInputField = document.getElementById('message_input_field');
@@ -40,7 +40,8 @@ const offereeIceButton = document.getElementById("ice_offeree");
 
 export const DOM = {
     createRoomButton,
-    inputRoomNameElement
+    inputRoomNameElement,
+    destroyRoomButton
 }
 
 // intialize UI events as soon as user enters page 
@@ -50,11 +51,40 @@ export function initializeUi(userId) {
     // setup modal functionality 
     setUpModalEvents()
 }
+// create a function for creator to enter the room
+export function creatorToProceed() {
+    console.log("creatorToProceed")
+    landingPageContainer.style.display = "none";
+    exitButton.classList.add("hidden"); // or "hide", but make it consistent
+    roomInterface.classList.remove("hidden")
+    roomNameHeadingTag.textContent = `You are in room ${getState().room}`
+}
+
+export function exitRoom() {
+    console.log("Exiting room")
+    landingPageContainer.style.display = "block";
+    roomInterface.classList.add("hidden")
+    setRoom(null);
+    // roomNameHeadingTag.textContent = ``
+    
+}
+
 
 function setUpModalEvents() {
     infoModalButton.onclick = openModal;
     closeModalButton.onclick = closeModal;
 }
+
+// ######Room Logic
+// listen for the enter/ return key and trigger the create room button
+inputRoomNameElement.addEventListener("keypress", (event) => {
+    if (event.key === "Enter") {
+        createRoomButton.click()
+    }
+})
+
+
+
 
 function openModal() {
     infoModalContent.classList.add("show")
