@@ -74,10 +74,11 @@ const wss = new WebSocketServer({server})
 wss.on("connection", (ws, req) => {
     const userId = Number(new URLSearchParams(req.url.split('?')[1]).get("userId"));
     addConnection(ws, userId)
+    ws.userId = userId;
     //register all three events listeners 
     ws.on("message", (data)=>handleMessage(data))
-    ws.on("close", (data)=>handleDisconneting(data))
-    ws.on("error", (data)=>console.log("error:", data))
+    ws.on("close", ()=>handleDisconneting(userId))
+    ws.on("error", ()=>console.log("error:", error))
 })
 function addConnection(ws, userId) {
     connections.push({
@@ -95,14 +96,29 @@ function handleMessage(data) {
         console.log("Error:", error)
     }
 }
-function handleDisconneting(data) {
-    const connectionIndex = connections.findIndex(conn => conn.userId === data.userId)
+function handleDisconneting(userId) {
+    
+    const connectionIndex = connections.findIndex(conn => conn.userId === userId);
     if (connectionIndex === -1) {
-        console.log("User not found")
-    };
-    connections.splice(connectionIndex, 1)
-    console.log("User removed:", data.userId)
-    console.log(connections.length)
+        console.log("User not found");
+        return;
+    }
+
+    connections.splice(connectionIndex, 1);
+    console.log("User removed:", userId);
+    console.log("Remaining connections:", connections.length);
+
+    // Remove from rooms
+    rooms.forEach(room => {
+        if (room.peer1 === userId) {
+            console.log("Removing peer1 from room:", room.roomName);
+            room.peer1 = null;
+        }
+        if (room.peer2 === userId) {
+            console.log("Removing peer2 from room:", room.roomName);
+            room.peer2 = null;
+        }
+    });
 
 } 
 
