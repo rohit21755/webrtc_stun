@@ -1,16 +1,49 @@
 import express from 'express'
 import { WebSocket, WebSocketServer } from 'ws'
 import http from "http"
-
+import { Type } from './constant';
 let app = express();
 app.use(express.static("public"))
+app.use(express.json())
 //global variable 
 const connections = []
-
+const rooms = []
 const server = http.createServer(app);
 app.get("/", (req, res)=>{
 
     res.sendFile(process.cwd() + "/public/index.html")
+})
+
+app.post("/create-room", (req, res)=> {
+    console.log("Creating rooom")
+    const { roomName, userId } = req.body;
+    const existingRoom = rooms.find(room => {
+        room.roomName == roomName;
+    })
+    if (existingRoom) {
+        const failureMessage = {
+            data: {
+                type: Type.ROOM_CHECK.RESPONSE_FAILURE,
+                message: "Room already exists, try to JOIN Room"
+            }
+        }
+        return res.status(400).json(failureMessage)
+    }
+    else {
+        rooms.push({
+            roomName: roomName,
+            peer1: userId,
+            peer2: null
+        })
+        const successmessage = {
+            data: {
+                type: Type.ROOM_CHECK.RESPONSE_SUCCESS,
+                message: "Room created successfully",
+                roomName: roomName
+            }
+        }
+    }
+    
 })
 // ############################### Websocket server 
 // Mounting ws server over http server

@@ -38,6 +38,11 @@ const offereeUpdateLocalDescriptionButton = document.getElementById("offeree_upd
 const offereeSendAnswerButton = document.getElementById("offeree_send_answer");
 const offereeIceButton = document.getElementById("ice_offeree");
 
+export const DOM = {
+    createRoomButton,
+    inputRoomNameElement
+}
+
 // intialize UI events as soon as user enters page 
 export function initializeUi(userId) {
     user_session_id_element.innerHTML = `Your session id is ${userId}`;
