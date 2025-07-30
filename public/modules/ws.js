@@ -1,5 +1,6 @@
 import * as state from "./state.js"
 import * as uiUtils from "./uiUtils.js"
+import * as constants from "./constants.js"
 export function ResgisterSocketEvents(wsClientConnection) {
     state.setWsConnection(wsClientConnection)
     //Listen for those 4 events 
@@ -12,13 +13,71 @@ export function ResgisterSocketEvents(wsClientConnection) {
     }
 }
 
-function handleMessage(message) {
-    console.log(message)
-}
+
 function handleClose(closeEventObject) {
     console.log(closeEventObject)
     uiUtils.LogToCustomConsole("You have been disconneted for our ws server", null, true, "red")
 }
 function handleError(error) {
     uiUtils.LogToCustomConsole("An error occured", red)
+}
+//outgoing joining room
+export function joinRoom(roomName, userId){
+    const message = {
+        label: constants.labels.NORMAL_SERVER_PROCESS,
+        data:{
+            type: constants.Type.ROOM_JOIN.REQUEST,
+            roomName,
+            userId
+        }
+    };
+    state.getState().userWebSocketConnection.send(JSON.stringify(message))
+};
+
+
+//incomming message
+function handleMessage(message) {
+    console.log(message)
+    const resp = JSON.parse(message.data)
+    console.log(resp.label === constants.labels.NORMAL_SERVER_PROCESS)
+   
+    switch(resp.label){
+        case constants.labels.NORMAL_SERVER_PROCESS:
+
+            normalServerProcessing(resp.data)
+            break;
+        default: 
+            console.log("unknown server processing logic")
+    }
+}
+
+function normalServerProcessing(data) {
+    console.log(data)
+    switch(data.type){
+        case constants.Type.ROOM_JOIN.RESPONSE_SUCCESS:
+            joinSuccessHandler(data);
+            break;
+        case constants.Type.ROOM_JOIN.RESPONSE_FAILURE:
+            uiUtils.LogToCustomConsole(data.message, "red")
+            break;
+        case constants.Type.ROOM_JOIN.NOTIFY:
+            // uiUtils.LogToCustomConsole(data.message, "green")
+            joinNotificationHandler(data)
+            break;
+        default:
+            console.log("Unknown response")
+    }
+}
+
+function joinSuccessHandler(data){
+    console.log(data)
+    state.setOtherUserId(data.creatorId)
+    state.setRoom(data.roomName)
+    uiUtils.joineeToProceedToRoom();
+}
+
+function joinNotificationHandler(data) {
+    alert(`User ${data.joineeId} has joined you room`)
+    uiUtils.LogToCustomConsole(data.message, "green")
+    uiUtils.updateCreatorsRoom()
 }

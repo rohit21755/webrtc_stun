@@ -1,7 +1,7 @@
 import express from 'express'
 import { WebSocket, WebSocketServer } from 'ws'
 import http from "http"
-import { Type } from './constant.js';
+import { Type, labels } from './constant.js';
 let app = express();
 app.use(express.static("public"))
 app.use(express.json())
@@ -90,7 +90,17 @@ function addConnection(ws, userId) {
 
 function handleMessage(data) {
     try{
+        let message = JSON.parse(data)
+        // process message depending on its lable type
+        switch(message.label){
+            case labels.NORMAL_SERVER_PROCESS:
+                console.log("==== normal server message ====")
+                normalServerProcessing(message.data)
+                break;
+            default:
+                console.log("===== unknown message label =====")
 
+        }
     }
     catch(error) {
         console.log("Error:", error)
@@ -121,6 +131,97 @@ function handleDisconneting(userId) {
     });
 
 } 
+// >>>>> NORMAL SERVER
+function normalServerProcessing(data) {
+    switch(data.type) {
+        case Type.ROOM_JOIN.REQUEST:
+            joinRoomHanlder(data);
+            break;
+        default:
+            console.log("unknown data type")
+    }
+}
+
+function joinRoomHanlder(data){
+    const {roomName, userId } = data;
+    const existingRoom = rooms.find(room => room.roomName === roomName);
+    let otheruserId = null;
+    if(!existingRoom) {
+        console.log("a user try to join, but room doesn't exists ")
+        const failureMessage = {
+            label: labels.NORMAL_SERVER_PROCESS,
+            data: {
+                type: Type.ROOM_JOIN.RESPONSE_FAILURE,
+                message: "Room does not exists"
+            }
+
+        }
+        sendWsMessageToUser(userId, failureMessage)
+        return
+    }
+    if(existingRoom.peer1 && existingRoom.peer2){
+        console.log("Room is full")
+        const failureMessage = {
+            label: labels.NORMAL_SERVER_PROCESS,
+            data: {
+                type: Type.ROOM_JOIN.RESPONSE_FAILURE,
+                message: "This room is full"
+            }
+
+        }
+        sendWsMessageToUser(userId, failureMessage)
+        return
+    }
+
+    // allow user to join room 
+    // room is available and not full
+    console.log("A user is attempting to join a room")
+    if(!existingRoom.peer1) {
+        existingRoom.peer1 = userId;
+        otheruserId = existingRoom.peer2
+    } else {
+        existingRoom.peer2 = userId;
+        otheruserId = existingRoom.peer1
+    }
+    const successMessage = {
+        label: labels.NORMAL_SERVER_PROCESS,
+        data: {
+            type: Type.ROOM_JOIN.RESPONSE_SUCCESS,
+            message: `You have successfully joined ${roomName}`,
+            creatorId: otheruserId,
+            roomName: roomName
+        }
+
+    }
+    sendWsMessageToUser(userId, successMessage)
+
+    const notificationMessage = {
+        label: labels.NORMAL_SERVER_PROCESS,
+        data: {
+            type: Type.ROOM_JOIN.NOTIFY,
+            message: `User ${userId} has joined your room`,
+            joineeId: userId
+        }
+
+    }
+    sendWsMessageToUser(otheruserId, notificationMessage)
+    return
+}
+//>>>>> WEBRTC SERVER
+
+
+// >>>>> WEBSOCKET GENERIC
+
+function sendWsMessageToUser(sendToUserId, message) {
+    const userConnection = connections.find(conn => conn.userId === sendToUserId);
+    if(userConnection && userConnection.wsConnection) {
+        userConnection.wsConnection.send(JSON.stringify(message))
+        console.log(`Message sent to ${sendToUserId}`)
+    }
+    else {
+        console.log(`User not found ${sendToUserId}`)
+    }
+}
 
 // ############################### Sign Up Server
 

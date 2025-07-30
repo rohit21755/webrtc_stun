@@ -13,7 +13,7 @@ uiUtils.initializeUi(userId)
 const wsClient = new WebSocket(`/?userId=${userId}`)
 
 ws.ResgisterSocketEvents(wsClient)
-
+console.log("Hello")
 // create room
 uiUtils.DOM.createRoomButton.addEventListener("click", ()=>{
     const roomName = uiUtils.DOM.inputRoomNameElement.value;
@@ -28,3 +28,11 @@ uiUtils.DOM.destroyRoomButton.addEventListener("click", ()=>{
     const roomName = state.getState().room;
     destoryRoom(roomName)
 })
+// joining room (peer2)
+uiUtils.DOM.joinRoomButton.addEventListener("click", ()=>{
+    const roomName = uiUtils.DOM.inputRoomNameElement.value;
+    if(!roomName){
+        alert("You have to join a room with valid name");
+    }
+    ws.joinRoom(roomName, userId);
+});

@@ -41,7 +41,8 @@ const offereeIceButton = document.getElementById("ice_offeree");
 export const DOM = {
     createRoomButton,
     inputRoomNameElement,
-    destroyRoomButton
+    destroyRoomButton,
+    joinRoomButton
 }
 
 // intialize UI events as soon as user enters page 
@@ -112,4 +113,18 @@ export function LogToCustomConsole(message, color = "#FFFFFF", highlight = false
     consoleDisplay.appendChild(messageElement)
     consoleDisplay.scrollTo = consoleDisplay.scrollHeight
     
+}
+
+export function joineeToProceedToRoom() {
+    
+    landingPageContainer.style.display = "none";
+    roomInterface.classList.remove("hidden")
+    destroyRoomButton.classList.add("hidden")
+    roomNameHeadingTag.textContent = `You are in room ${getState().room}`
+
+}
+
+export function updateCreatorsRoom(){
+    destroyRoomButton.classList.add("hidden")
+    exitButton.classList.remove("hidden")
 }
