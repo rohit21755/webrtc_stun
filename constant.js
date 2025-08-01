@@ -16,7 +16,11 @@ export const Type = {
     ROOM_EXIT: {
         RESPONSE_SUCCESS: "ROOM_EXIT_RESPONSE_SUCCESS",
         RESPONSE_FAILURE: "ROOM_EXIT_RESPONSE_FAILURE",
-        EXIT: "EXIT_ROOM_REQUEST"
+        EXIT: "EXIT_ROOM_REQUEST",
+        NOTIFY: "EXIT_ROOM_NOTIFICATION"
+    },
+    ROOM_DESTROY:{
+        NOTIFY: "ROOM_DESTROY_NOTIFICATION"
     }
 }
 export const labels = {

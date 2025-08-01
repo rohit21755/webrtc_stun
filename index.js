@@ -120,6 +120,18 @@ function handleDisconneting(userId) {
 
     // Remove from rooms
     rooms.forEach(room => {
+        const otheruserId = (room.peer1 === userId) ? room.peer2 : room.peer1;
+
+        const notificationMessage = {
+            label: labels.NORMAL_SERVER_PROCESS,
+            data: {
+                type: Type.ROOM_EXIT.NOTIFY,
+                message: `User ${userId} has been disconnected`,
+            }
+        }
+        if(otheruserId) {
+            sendWsMessageToUser(otheruserId, notificationMessage)
+        }
         if (room.peer1 === userId) {
             console.log("Removing peer1 from room:", room.roomName);
             room.peer1 = null;
