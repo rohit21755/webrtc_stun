@@ -1,5 +1,5 @@
 
-import { setUserID, getState, setRoom } from "./state.js";
+import { setUserID, getState, setRoom, resetState, setOtherUserId } from "./state.js";
 // selecting DOM elements 
 const user_session_id_element = document.getElementById("session_id_display");
 const infoModalButton = document.getElementById('info_modal_button');
@@ -42,7 +42,8 @@ export const DOM = {
     createRoomButton,
     inputRoomNameElement,
     destroyRoomButton,
-    joinRoomButton
+    joinRoomButton,
+    exitButton
 }
 
 // intialize UI events as soon as user enters page 
@@ -65,7 +66,7 @@ export function exitRoom() {
     console.log("Exiting room")
     landingPageContainer.style.display = "block";
     roomInterface.classList.add("hidden")
-    setRoom(null);
+    resetState()
     // roomNameHeadingTag.textContent = ``
     
 }
@@ -85,7 +86,12 @@ inputRoomNameElement.addEventListener("keypress", (event) => {
 })
 
 
-
+export function updateUIRemainingUser(){
+    alert("Someone left")
+    setOtherUserId(null)
+    messagesContainer.innerHTML = "Waiting for a peer join";
+    // have to add more lodic here
+}
 
 function openModal() {
     infoModalContent.classList.add("show")
@@ -121,10 +127,11 @@ export function joineeToProceedToRoom() {
     roomInterface.classList.remove("hidden")
     destroyRoomButton.classList.add("hidden")
     roomNameHeadingTag.textContent = `You are in room ${getState().room}`
-
+    messagesContainer.innerHTML = "Please wait..... connecting to webrtc"
 }
 
 export function updateCreatorsRoom(){
     destroyRoomButton.classList.add("hidden")
     exitButton.classList.remove("hidden")
+    messagesContainer.innerHTML = "Please wait..... connecting to webrtc"
 }

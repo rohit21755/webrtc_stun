@@ -34,6 +34,18 @@ export function joinRoom(roomName, userId){
     state.getState().userWebSocketConnection.send(JSON.stringify(message))
 };
 
+export function exitRoom(roomName, userId){
+    const message = {
+        label: constants.labels.NORMAL_SERVER_PROCESS,
+        data:{
+            type: constants.Type.ROOM_EXIT,
+            roomName,
+            userId
+        }
+    };
+    state.getState().userWebSocketConnection.send(JSON.stringify(message))
+}
+
 
 //incomming message
 function handleMessage(message) {
@@ -64,9 +76,15 @@ function normalServerProcessing(data) {
             // uiUtils.LogToCustomConsole(data.message, "green")
             joinNotificationHandler(data)
             break;
+        case constants.Type.ROOM_EXIT.EXIT:
+            exitNotificationHandler(data)
         default:
             console.log("Unknown response")
     }
+}
+function exitNotificationHandler(data) {
+    uiUtils.LogToCustomConsole(data.message, "red")
+    uiUtils.updateUIRemainingUser()
 }
 
 function joinSuccessHandler(data){

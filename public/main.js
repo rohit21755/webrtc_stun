@@ -36,3 +36,11 @@ uiUtils.DOM.joinRoomButton.addEventListener("click", ()=>{
     }
     ws.joinRoom(roomName, userId);
 });
+
+// exit room
+uiUtils.DOM.exitButton.addEventListener("click", ()=>{
+    const roomName = state.getState().room
+    uiUtils.exitRoom()
+    ws.exitRoom(roomName, userId)
+    uiUtils.LogToCustomConsole(`You have left the room ${roomName}`)
+})

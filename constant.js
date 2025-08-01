@@ -13,6 +13,11 @@ export const Type = {
         REQUEST: "JOIN_ROOM_REQUEST",
         NOTIFY: "NOTIFY"
     },
+    ROOM_EXIT: {
+        RESPONSE_SUCCESS: "ROOM_EXIT_RESPONSE_SUCCESS",
+        RESPONSE_FAILURE: "ROOM_EXIT_RESPONSE_FAILURE",
+        EXIT: "EXIT_ROOM_REQUEST"
+    }
 }
 export const labels = {
     NORMAL_SERVER_PROCESS: "NORMAL_SERVER_PROCESS",

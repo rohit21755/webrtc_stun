@@ -128,6 +128,15 @@ function handleDisconneting(userId) {
             console.log("Removing peer2 from room:", room.roomName);
             room.peer2 = null;
         }
+
+        if(room.peer1 === null && room.peer2 === null) {
+            const roomIndex = rooms.findIndex(room2 => {
+                return room2.roomName === room.roomName
+            })
+            if (roomIndex != -1){
+                rooms.splice(roomIndex,1)
+            }
+        }
     });
 
 } 
@@ -136,6 +145,9 @@ function normalServerProcessing(data) {
     switch(data.type) {
         case Type.ROOM_JOIN.REQUEST:
             joinRoomHanlder(data);
+            break;
+        case Type.ROOM_EXIT.EXIT:
+            exitRoomHandler(data);
             break;
         default:
             console.log("unknown data type")
@@ -207,6 +219,47 @@ function joinRoomHanlder(data){
     sendWsMessageToUser(otheruserId, notificationMessage)
     return
 }
+
+function exitRoomHandler(data){
+    const {roomName, userId} = data
+    const existingRoom = rooms.find(room => room.roomName === roomName);
+    const otheruserId = (existingRoom.peer1 === userId) ? existingRoom.peer2 : existingRoom.peer1;
+
+    if(!existingRoom) {console.log(`Room ${roomName} does not exists`)
+         return;}
+
+    if(existingRoom.peer1 === userId){
+        existingRoom.peer1 = null
+        console.log("Removed peer1 from the ")
+    } else {
+        existingRoom.peer2 = null
+    }
+
+    // clean up and remove empty room
+    if(existingRoom.peer1 === null && existingRoom.peer2 === null) {
+        const roomIndex = rooms.findIndex(room2 => {
+            return room2.roomName === existingRoom.roomName
+        })
+        if (roomIndex != -1){
+            rooms.splice(roomIndex,1)
+        }
+    }
+    const notificationMessage = {
+        label: labels.NORMAL_SERVER_PROCESS,
+        data: {
+            type: Type.ROOM_EXIT.EXIT,
+            message: `User ${userId} has left room`,
+            joineeId: userId
+        }
+
+    }
+    sendWsMessageToUser(otheruserId, notificationMessage)
+    return
+
+
+
+
+}
 //>>>>> WEBRTC SERVER
 
 
@@ -225,6 +278,6 @@ function sendWsMessageToUser(sendToUserId, message) {
 
 // ############################### Sign Up Server
 
-server.listen(4000, ()=>{
+server.listen(4000,"0.0.0.0", ()=>{
     console.log("server listening on 4000")
 })

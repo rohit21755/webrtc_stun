@@ -31,6 +31,12 @@ export const setRoom = (room) => {
     console.log("room name:", room)
     setState({room})
 }
+export const resetState = () => {
+    setState({
+        room: null,
+        otherUserId: null
+    })
+}
 
 export const getState = () => {
     return state;
