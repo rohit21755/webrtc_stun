@@ -28,7 +28,6 @@ export const setWsConnection = (wsConnection) => {
     setState({userWebSocketConnection:wsConnection})
 }
 export const setRoom = (room) => {
-    console.log("room name:", room)
     setState({room})
 }
 export const resetState = () => {

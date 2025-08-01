@@ -2,7 +2,6 @@ import * as uiUtils from "./uiUtils.js"
 import { Type } from "./constants.js";
 import * as state from "./state.js"
 export function createRoom(roomName, userId){
-    console.log("Creating room with name:", roomName, "for userId:", userId);
     fetch("/create-room", {
         method: 'POST',
         headers: {
@@ -12,9 +11,8 @@ export function createRoom(roomName, userId){
     })
     .then(response => response.json())
     .then(resObj => {
-        console.log("Hello")
+        
         if (resObj.data.type === Type.ROOM_CHECK.RESPONSE_SUCCESS) {
-            console.log("Room created successfully", resObj.data.roomName);
             state.setRoom(resObj.data.roomName);
             uiUtils.LogToCustomConsole(resObj.data.message, "green");
             uiUtils.LogToCustomConsole("Waiting for peer to join the room", "yellow");

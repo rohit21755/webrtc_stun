@@ -15,7 +15,6 @@ export function ResgisterSocketEvents(wsClientConnection) {
 
 
 function handleClose(closeEventObject) {
-    console.log(closeEventObject)
     uiUtils.LogToCustomConsole("You have been disconneted for our ws server", null, true, "red")
 }
 function handleError(error) {
@@ -38,7 +37,7 @@ export function exitRoom(roomName, userId){
     const message = {
         label: constants.labels.NORMAL_SERVER_PROCESS,
         data:{
-            type: constants.Type.ROOM_EXIT,
+            type: constants.Type.ROOM_EXIT.EXIT,
             roomName,
             userId
         }
@@ -49,13 +48,12 @@ export function exitRoom(roomName, userId){
 
 //incomming message
 function handleMessage(message) {
-    console.log(message)
+   
     const resp = JSON.parse(message.data)
-    console.log(resp.label === constants.labels.NORMAL_SERVER_PROCESS)
    
     switch(resp.label){
         case constants.labels.NORMAL_SERVER_PROCESS:
-
+            console.log(resp.data)
             normalServerProcessing(resp.data)
             break;
         default: 
@@ -64,7 +62,7 @@ function handleMessage(message) {
 }
 
 function normalServerProcessing(data) {
-    console.log(data)
+    console.log(data.type)
     switch(data.type){
         case constants.Type.ROOM_JOIN.RESPONSE_SUCCESS:
             joinSuccessHandler(data);
@@ -77,7 +75,9 @@ function normalServerProcessing(data) {
             joinNotificationHandler(data)
             break;
         case constants.Type.ROOM_EXIT.EXIT:
+            console.log("exit notification handler")
             exitNotificationHandler(data)
+            break;
         default:
             console.log("Unknown response")
     }
@@ -88,7 +88,6 @@ function exitNotificationHandler(data) {
 }
 
 function joinSuccessHandler(data){
-    console.log(data)
     state.setOtherUserId(data.creatorId)
     state.setRoom(data.roomName)
     uiUtils.joineeToProceedToRoom();

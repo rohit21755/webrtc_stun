@@ -4,7 +4,7 @@ import { createRoom, destoryRoom } from "./modules/ajax.js"
 import * as state from "./modules/state.js"
 // Generate  unique user code for every user that visits the page
 const userId = Math.round(Math.random() * 1000000)
-console.log(userId)
+
 // initialize the DOM
 uiUtils.initializeUi(userId)
 
@@ -13,7 +13,7 @@ uiUtils.initializeUi(userId)
 const wsClient = new WebSocket(`/?userId=${userId}`)
 
 ws.ResgisterSocketEvents(wsClient)
-console.log("Hello")
+
 // create room
 uiUtils.DOM.createRoomButton.addEventListener("click", ()=>{
     const roomName = uiUtils.DOM.inputRoomNameElement.value;
@@ -40,6 +40,7 @@ uiUtils.DOM.joinRoomButton.addEventListener("click", ()=>{
 // exit room
 uiUtils.DOM.exitButton.addEventListener("click", ()=>{
     const roomName = state.getState().room
+    console.log(roomName)
     uiUtils.exitRoom()
     ws.exitRoom(roomName, userId)
     uiUtils.LogToCustomConsole(`You have left the room ${roomName}`)

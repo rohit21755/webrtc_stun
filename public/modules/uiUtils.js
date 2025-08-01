@@ -55,7 +55,6 @@ export function initializeUi(userId) {
 }
 // create a function for creator to enter the room
 export function creatorToProceed() {
-    console.log("creatorToProceed")
     landingPageContainer.style.display = "none";
     exitButton.classList.add("hidden"); // or "hide", but make it consistent
     roomInterface.classList.remove("hidden")
@@ -63,7 +62,6 @@ export function creatorToProceed() {
 }
 
 export function exitRoom() {
-    console.log("Exiting room")
     landingPageContainer.style.display = "block";
     roomInterface.classList.add("hidden")
     resetState()
