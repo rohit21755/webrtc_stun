@@ -12,12 +12,12 @@ export function createRoom(roomName, userId){
     .then(response => response.json())
     .then(resObj => {
         
-        if (resObj.data.type === Type.ROOM_CHECK.RESPONSE_SUCCESS) {
+        if (resObj.data.type === Type.ROOM_CREATE.RESPONSE_SUCCESS) {
             state.setRoom(resObj.data.roomName);
             uiUtils.LogToCustomConsole(resObj.data.message, "green");
             uiUtils.LogToCustomConsole("Waiting for peer to join the room", "yellow");
             uiUtils.creatorToProceed();
-        } else if (resObj.data.type === Type.ROOM_CHECK.RESPONSE_FAILURE) {
+        } else if (resObj.data.type === Type.ROOM_CREATE.RESPONSE_FAILURE) {
             uiUtils.LogToCustomConsole(resObj.data.message, "red");
 
         }

@@ -37,7 +37,7 @@ export function exitRoom(roomName, userId){
     const message = {
         label: constants.labels.NORMAL_SERVER_PROCESS,
         data:{
-            type: constants.Type.ROOM_EXIT.EXIT,
+            type: constants.Type.ROOM_EXIT.REQUEST,
             roomName,
             userId
         }
@@ -74,7 +74,7 @@ function normalServerProcessing(data) {
             // uiUtils.LogToCustomConsole(data.message, "green")
             joinNotificationHandler(data)
             break;
-        case constants.Type.ROOM_EXIT.EXIT:
+        case constants.Type.ROOM_EXIT.NOTIFY:
             console.log("exit notification handler")
             exitNotificationHandler(data)
             break;
@@ -95,6 +95,7 @@ function joinSuccessHandler(data){
 
 function joinNotificationHandler(data) {
     alert(`User ${data.joineeId} has joined you room`)
+    state.setOtherUserId(data.joineeId)
     uiUtils.LogToCustomConsole(data.message, "green")
     uiUtils.updateCreatorsRoom()
 }

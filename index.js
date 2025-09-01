@@ -43,7 +43,7 @@ app.post("/create-room", (req, res)=> {
     if (existingRoom) {
         const failureMessage = {
             data: {
-                type: Type.ROOM_CHECK.RESPONSE_FAILURE,
+                type: Type.ROOM_CREATE.RESPONSE_FAILURE,
                 message: "Room already exists, try to JOIN Room"
             }
         }
@@ -57,7 +57,7 @@ app.post("/create-room", (req, res)=> {
         })
         const successmessage = {
             data: {
-                type: Type.ROOM_CHECK.RESPONSE_SUCCESS,
+                type: Type.ROOM_CREATE.RESPONSE_SUCCESS,
                 message: "Room created successfully",
                 roomName: roomName
             }
@@ -125,7 +125,7 @@ function handleDisconneting(userId) {
         const notificationMessage = {
             label: labels.NORMAL_SERVER_PROCESS,
             data: {
-                type: Type.ROOM_EXIT.NOTIFY,
+                type: Type.ROOM_DISCONNECTION.NOTIFY,
                 message: `User ${userId} has been disconnected`,
             }
         }
@@ -158,7 +158,7 @@ function normalServerProcessing(data) {
         case Type.ROOM_JOIN.REQUEST:
             joinRoomHanlder(data);
             break;
-        case Type.ROOM_EXIT.EXIT:
+        case Type.ROOM_EXIT.REQUEST:
             exitRoomHandler(data);
             break;
         default:
@@ -259,7 +259,7 @@ function exitRoomHandler(data){
     const notificationMessage = {
         label: labels.NORMAL_SERVER_PROCESS,
         data: {
-            type: Type.ROOM_EXIT.EXIT,
+            type: Type.ROOM_EXIT.NOTIFY,
             message: `User ${userId} has left room`,
             joineeId: userId
         }
