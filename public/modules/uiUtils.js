@@ -43,7 +43,16 @@ export const DOM = {
     inputRoomNameElement,
     destroyRoomButton,
     joinRoomButton,
-    exitButton
+    exitButton,
+    offeror: {
+        offerorCreatePcButton,
+        offerorAddDataTypeButton,
+        offerorCreateOfferButton,
+        offerorUpdateLocalDescriptionButton,
+        offerorSendOfferButton,
+        offerorSetRemoteDescriptionButton,
+        offerorIceButton,
+    },
 }
 
 // intialize UI events as soon as user enters page 
@@ -126,10 +135,22 @@ export function joineeToProceedToRoom() {
     destroyRoomButton.classList.add("hidden")
     roomNameHeadingTag.textContent = `You are in room ${getState().room}`
     messagesContainer.innerHTML = "Please wait..... connecting to webrtc"
+
+    // show the process buttons
+    offerorButtonsContainer.classList.remove("hidden")
+    offereeButtonsContainer.classList.add("show")
 }
 
 export function updateCreatorsRoom(){
     destroyRoomButton.classList.add("hidden")
     exitButton.classList.remove("hidden")
     messagesContainer.innerHTML = "Please wait..... connecting to webrtc"
+}
+
+// learning purposes - system to hide all the learning buttons
+export function updateUiButton(button, message){
+    button.classList.remove("process_pending")
+    button.classList.add("process_complete")
+    button.setAttribute("disabled", true)
+    LogToCustomConsole(message, "green", true)
 }

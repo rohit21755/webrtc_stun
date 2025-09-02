@@ -1,6 +1,7 @@
 import * as state from "./state.js"
 import * as uiUtils from "./uiUtils.js"
 import * as constants from "./constants.js"
+import * as webrtcHandler from "./webrtcHandler.js"
 export function ResgisterSocketEvents(wsClientConnection) {
     state.setWsConnection(wsClientConnection)
     //Listen for those 4 events 
@@ -91,6 +92,8 @@ function joinSuccessHandler(data){
     state.setOtherUserId(data.creatorId)
     state.setRoom(data.roomName)
     uiUtils.joineeToProceedToRoom();
+    // start the webrtc process
+    webrtcHandler.startWebrtcProcess();
 }
 
 function joinNotificationHandler(data) {
