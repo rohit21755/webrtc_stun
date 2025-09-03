@@ -286,10 +286,34 @@ function webRTCServerProcessing(data){
         case Type.WEB_RTC.OFFER:
             processOffer(data);
             break;
+        case Type.WEB_RTC.ANSWER:
+            processAnswer(data);
+            break;
+        case Type.WEB_RTC.ICE_CANDIDATE:
+            processIce(data);
+            break;
         default:
             console.log("Unknown data type:", data.type)
             break;
     }
+}
+function processAnswer(data){
+    const { otherUserId } = data;
+    const message = {
+        label: labels.WEBRTC_PROCESS,
+        data: data  
+    }
+    sendWsMessageToUser(otherUserId, message)
+    console.log("answer has been sent to the otheruser")
+}
+function processIce(data){
+    const { otherUserId } = data;
+    const message = {
+        label: labels.WEBRTC_PROCESS,
+        data: data  
+    }
+    sendWsMessageToUser(otherUserId, message)
+    console.log("ice has been sent to the otheruser")
 }
 
 function processOffer(data){

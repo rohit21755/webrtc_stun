@@ -136,6 +136,7 @@ function registerDataChannelEventListeners(){
 }
 
 export function handleOffer(data){
+    let answer;
     uiUtils.LogToCustomConsole("WebRTC offer received, Create your peer connection object")
     uiUtils.showOffereeButtons();
 
@@ -149,6 +150,40 @@ export function handleOffer(data){
         createDataChannel(false); //4
 
         uiUtils.updateUiButton(DOM.offeree.offereeAddDataTypeButton, "Now you can update your pc object, by setting the remote description")
-        console.log("====",pc)
+    })
+
+    DOM.offeree.offereeUpdateRemoteDescriptionButton.addEventListener("click", async()=>{
+        await pc.setRemoteDescription(data.offer)
+
+        uiUtils.updateUiButton(offereeUpdateRemoteDescriptionButton, "Next, create your answer")
+    })
+
+    DOM.offeree.offereeCreateAnswerButton.addEventListener("event", async()=>{
+        answer = await pc.createAnswer();
+        uiUtils.LogToCustomConsole("Succesfully created an asnwer")
+        console.log("answer:", answer);
+
+        uiUtils.updateUiButton(DOM.offeree.offereeCreateAnswerButton, "Update their local description with your answer")
+    })
+
+    DOM.offeree.offereeUpdateLocalDescriptionButton.addEventListener("click", async()=>{
+        await pc.setLocalDescription(answer);
+        uiUtils.updateUiButton(DOM.offeree.offereeUpdateRemoteDescriptionButton, "Send your answer to peer1");
+    })
+
+    DOM.offeree.offereeSendAnswerButton.addEventListener("click",()=>{
+        ws.sendAnswer(answer)
+        uiUtils.updateUiButton(DOM.offeree.offereeSendAnswerButton,"Answer is sent. Don't forget to send your ice candidate too")
+
+        DOM.offeree.offereeIceButton.classList.remove("hidder")
+        DOM.offeree.offereeIceButton.classList.add("show-ice")
+    })
+
+    DOM.offeree.offereeIceButton.addEventListener("click", ()=>{
+        ws.sendIceCandidates(icecandidates)
+        uiUtils.LogToCustomConsole("Ice candidates sent")
+        uiUtils.LogToCustomConsole("Waiting to receive ICE candidates from the other side")
+
+        uiUtils.updateUiButton(DOM.offeree.offereeIceButton, "You are all done, Wait for the other side")
     })
 }

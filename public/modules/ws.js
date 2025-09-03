@@ -59,6 +59,30 @@ export function sendOffer(offer){
     state.getState().userWebSocketConnection.send(JSON.stringify(message))
 }
 
+export function sendAnswer(answer){
+    const message = {
+        label: constants.labels.WEBRTC_PROCESS,
+        data: {
+            type: constants.Type.WEB_RTC,
+            answer,
+            otherUserId: state.getState().otherUserId
+        }
+    }
+    state.getState().userWebSocketConnection.send(JSON.stringify(message));
+}
+
+export function sendIceCandidates(arrayoficecandidates){
+    const message = {
+        label: constants.labels.NORMAL_SERVER_PROCESS,
+        data:{
+            type: constants.Type.WEB_RTC.ICE_CANDIDATE,
+            candidates: arrayoficecandidates,
+            otherUserId: state.getState().otherUserId
+        }
+    }
+    state.getState().userWebSocketConnection.send(JSON.stringify(message));
+}
+
 //incomming message
 function handleMessage(message) {
    
