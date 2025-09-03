@@ -22,6 +22,11 @@ export const Type = {
     },
     ROOM_DISCONNECTION:{
         NOTIFY: "ROOM_DESTROY_NOTIFICATION"
+    },
+    WEB_RTC:{
+        OFFER: "OFFER",
+        ANSWER: "ANSWER",
+        ICE_CANDIDATE: 'ICE_CANDIDATE'
     }
 }
 

@@ -2,6 +2,7 @@ import express from 'express'
 import { WebSocket, WebSocketServer } from 'ws'
 import http from "http"
 import { Type, labels } from './constant.js';
+import { constants } from 'buffer';
 let app = express();
 app.use(express.static("public"))
 app.use(express.json())
@@ -96,6 +97,10 @@ function handleMessage(data) {
             case labels.NORMAL_SERVER_PROCESS:
                 console.log("==== normal server message ====")
                 normalServerProcessing(message.data)
+                break;
+            case labels.WEBRTC_PROCESS:
+                console.log("==== webrtc signaling process ====")
+                webRTCServerProcessing(message.data)
                 break;
             default:
                 console.log("===== unknown message label =====")
@@ -274,6 +279,28 @@ function exitRoomHandler(data){
 }
 //>>>>> WEBRTC SERVER
 
+
+function webRTCServerProcessing(data){
+    // process the webrtc process
+    switch(data.type){
+        case Type.WEB_RTC.OFFER:
+            processOffer(data);
+            break;
+        default:
+            console.log("Unknown data type:", data.type)
+            break;
+    }
+}
+
+function processOffer(data){
+    const { otherUserId } = data;
+    const message = {
+        label: labels.WEBRTC_PROCESS,
+        data: data  
+    }
+    sendWsMessageToUser(otherUserId, message)
+    console.log("offer has been sent to the otheruser")
+}
 
 // >>>>> WEBSOCKET GENERIC
 

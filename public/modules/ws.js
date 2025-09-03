@@ -45,7 +45,19 @@ export function exitRoom(roomName, userId){
     };
     state.getState().userWebSocketConnection.send(JSON.stringify(message))
 }
+// sending an offer to the signaling server
 
+export function sendOffer(offer){
+    const message = {
+        label: constants.labels.WEBRTC_PROCESS,
+        data:{
+            type: constants.Type.WEB_RTC.OFFER,
+            offer: offer,
+            otherUserId: state.getState().otherUserId
+        }
+    };
+    state.getState().userWebSocketConnection.send(JSON.stringify(message))
+}
 
 //incomming message
 function handleMessage(message) {
@@ -57,11 +69,27 @@ function handleMessage(message) {
             console.log(resp.data)
             normalServerProcessing(resp.data)
             break;
+        case constants.labels.WEBRTC_PROCESS:
+            console.log(resp.data)
+            webRTCServerProcessing(resp.data)
+            break;
         default: 
             console.log("unknown server processing logic")
     }
 }
 
+// webrtc server processing
+function webRTCServerProcessing(data){
+    switch(data.type){
+        case constants.Type.WEB_RTC.OFFER:
+            webrtcHandler.handleOffer(data)
+            break;
+        default:
+            console.log("Unknown data type", data.type)
+    }
+}
+
+// normal server processing
 function normalServerProcessing(data) {
     console.log(data.type)
     switch(data.type){

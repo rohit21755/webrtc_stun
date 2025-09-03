@@ -53,6 +53,15 @@ export const DOM = {
         offerorSetRemoteDescriptionButton,
         offerorIceButton,
     },
+    offeree: {
+        offereeCreatePcButton,
+        offereeAddDataTypeButton,
+        offereeUpdateRemoteDescriptionButton,
+        offereeCreateAnswerButton,
+        offereeUpdateLocalDescriptionButton,
+        offereeSendAnswerButton,
+        offereeIceButton
+    }
 }
 
 // intialize UI events as soon as user enters page 
@@ -153,4 +162,9 @@ export function updateUiButton(button, message){
     button.classList.add("process_complete")
     button.setAttribute("disabled", true)
     LogToCustomConsole(message, "green", true)
+}
+//show offeree's button
+export function showOffereeButtons(){
+    offereeButtonsContainer.classList.remove("hidden")
+    offereeButtonsContainer.classList.remove("show")
 }
