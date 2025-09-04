@@ -199,7 +199,18 @@ export function handleAnswer(data){
         ws.sendIceCandidates(icecandidates);
         uiUtils.updateUiButton(DOM.offeror.offerorIceButton, "Finaly set Your remote description")
         DOM.offeror.offerorSetRemoteDescriptionButton.classList.remove("hide")
-        DOM.offeror.offerorSetRemoteDescriptionButton.classList.remove("show")
+    })
+    DOM.offeror.offerorSetRemoteDescriptionButton.addEventListener("click", async()=>{
+        await pc.setRemoteDescription(data.answer);
+        uiUtils.LogToCustomConsole("remote description updated the answer")
+
+        //finally, add the ice candidates inside the buffer
+        // once remoteDescription is set, you can add ice candidates
+        for(const candidate of iceCandidateReceivedBuffer){
+            pc.addIceCandidate(candidate)
+        }
+        uiUtils.LogToCustomConsole("Ice candidate added")
+        iceCandidateReceivedBuffer.splice(0, iceCandidateReceivedBuffer.length)
     })
 }
 export function handleIceCandidates(data){
@@ -216,7 +227,7 @@ export function handleIceCandidates(data){
             console.log("Error trying to add an ice candidate to the pc object", error)
         }
     } else {
-        console.log("we are in if")
+        console.log("ondatachannel event was emitted for the peer")
         // create a tempo buffer
         data.candidates.forEach(candidate => {
             iceCandidateReceivedBuffer.push(candidate)
