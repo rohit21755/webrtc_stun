@@ -1,3 +1,4 @@
+import { disconnect } from "process";
 import * as uiUtils from "./uiUtils.js"
 import { DOM } from "./uiUtils.js"
 import * as ws from "./ws.js"
@@ -98,6 +99,8 @@ function createPeerConnectionObject(){
             alert("Connection established")
             uiUtils.LogToCustomConsole("Connection established", "green", true)
             // update ui to remove all the learning buttons, and allow users to insert text
+
+            uiUtils.updateUiOnSuccessfullConnection()
         }
     })
 
@@ -118,6 +121,12 @@ function createPeerConnectionObject(){
         }
     })
 
+    // pc.addEventListener("iceconnectionstatechange", ()=>{
+    //     if(pc.isConnectionState == "disconnected"){
+    //         closePeerConnection()
+    //     }
+    // })
+
 
     return uiUtils.LogToCustomConsole("Peer connection object created", "green", true)
 }
@@ -125,6 +134,9 @@ function createPeerConnectionObject(){
 function registerDataChannelEventListeners(){
     dataChannel.addEventListener("message", (e)=>{
         console.log("message received", e.data)
+
+        const msg = e.data;
+        uiUtils.addIncommingMessageToUi(msg)
         // later , ewe can implement logic to add the message to users frontend
     })
     dataChannel.addEventListener("open", (e)=>{
@@ -234,4 +246,24 @@ export function handleIceCandidates(data){
             uiUtils.LogToCustomConsole("Added ice candidate in your temp buff")
         })
     }
+}
+
+export function sendMessageUsingDataChannel(message){
+    dataChannel.send(message)
+}
+
+export function closePeerConnection(){
+
+    // if(dataChannel){ (optional)
+    //     dataChannel.close();
+    //     console.log("data channel closed")
+        
+    // }
+    if(pc) {
+        pc.close();
+        console.log("Peer connection closed")
+        dataChannel = null;
+        pc = null;
+    }
+    console.log("YOur pc obejct after exiting the room is now: ", pc)
 }

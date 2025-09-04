@@ -148,6 +148,7 @@ function normalServerProcessing(data) {
 function exitNotificationHandler(data) {
     uiUtils.LogToCustomConsole(data.message, "red")
     uiUtils.updateUIRemainingUser()
+    webrtcHandler.closePeerConnection()
 }
 
 function joinSuccessHandler(data){

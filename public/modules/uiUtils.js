@@ -44,6 +44,8 @@ export const DOM = {
     destroyRoomButton,
     joinRoomButton,
     exitButton,
+    sendMessageButton,
+    messageInputField,
     offeror: {
         offerorCreatePcButton,
         offerorAddDataTypeButton,
@@ -167,4 +169,56 @@ export function updateUiButton(button, message){
 export function showOffereeButtons(){
     offereeButtonsContainer.classList.remove("hidden")
     offereeButtonsContainer.classList.remove("show")
+}
+
+export function updateUiOnSuccessfullConnection(){
+    messageInputContainer.classList.remove("hidden")
+    messageInputContainer.classList.add("show");
+
+    messageInputField.classList.remove("hidden")
+    messageInputField.classList.add("show");
+    sendMessageButton.classList.remove("hidden")
+    sendMessageButton.classList.add("show")
+    
+    // remove text inside message container
+
+    //remove the learning button for the offeror
+    offerorButtonsContainer.classList.remove("show")
+    offerorButtonsContainer.classList.add("hide")
+    // remove the learning button for the offeree
+    offereeButtonsContainer.classList.add("hide")
+    offereeButtonsContainer.classList.remove("show")
+
+    messageInputField.addEventListener("keypress", (e)=>{
+        if(e.key == "Enter"){
+            sendMessageButton.click();
+        }
+    })
+}
+
+export function addOutgoingMessageToUi(message){
+    const userTag = "YOU"
+    const formattedMessage = `${userTag}: ${message}`
+    const messageElement = document.createElement("div");
+    messageElement.style.color = "green"
+    messageElement.textContent = formattedMessage
+
+    messagesContainer.appendChild(messageElement)
+    messageInputField.value = ""
+
+    messagesContainer.scrollTop = messagesContainer.scrollHeight
+
+}
+
+export function addIncommingMessageToUi(msg){
+    const otherUserId = getState().otherUserId
+    const formattedMessage = `${otherUserId}: ${msg}`
+    const messageElement = document.createElement("div");
+    messageElement.style.color = "blue"
+    messageElement.textContent = formattedMessage
+
+    messagesContainer.appendChild(messageElement)
+    messageInputField.value = ""
+
+    messagesContainer.scrollTop = messagesContainer.scrollHeight
 }
