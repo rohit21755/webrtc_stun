@@ -5,6 +5,7 @@ import * as ws from "./ws.js"
 let pc; // PeerConnection object
 let dataChannel;
 let icecandidates = [];
+let iceCandidateReceivedBuffer = []
 const webRTCConfiguration = {
     iceServers:[
         {
@@ -155,10 +156,11 @@ export function handleOffer(data){
     DOM.offeree.offereeUpdateRemoteDescriptionButton.addEventListener("click", async()=>{
         await pc.setRemoteDescription(data.offer)
 
-        uiUtils.updateUiButton(offereeUpdateRemoteDescriptionButton, "Next, create your answer")
+        uiUtils.updateUiButton(DOM.offeree.offereeUpdateRemoteDescriptionButton, "Next, create your answer")
     })
 
-    DOM.offeree.offereeCreateAnswerButton.addEventListener("event", async()=>{
+    DOM.offeree.offereeCreateAnswerButton.addEventListener("click", async()=>{
+        console.log("hello")
         answer = await pc.createAnswer();
         uiUtils.LogToCustomConsole("Succesfully created an asnwer")
         console.log("answer:", answer);
@@ -175,7 +177,7 @@ export function handleOffer(data){
         ws.sendAnswer(answer)
         uiUtils.updateUiButton(DOM.offeree.offereeSendAnswerButton,"Answer is sent. Don't forget to send your ice candidate too")
 
-        DOM.offeree.offereeIceButton.classList.remove("hidder")
+        DOM.offeree.offereeIceButton.classList.remove("hidden")
         DOM.offeree.offereeIceButton.classList.add("show-ice")
     })
 
@@ -186,4 +188,39 @@ export function handleOffer(data){
 
         uiUtils.updateUiButton(DOM.offeree.offereeIceButton, "You are all done, Wait for the other side")
     })
+}
+
+export function handleAnswer(data){
+    uiUtils.LogToCustomConsole("answer received, Send your ice candidates to PEER2")
+    DOM.offeror.offerorIceButton.classList.remove("hidden")
+    DOM.offeror.offerorIceButton.classList.add("show-ice")
+
+    DOM.offeror.offerorIceButton.addEventListener("click",async()=>{
+        ws.sendIceCandidates(icecandidates);
+        uiUtils.updateUiButton(DOM.offeror.offerorIceButton, "Finaly set Your remote description")
+        DOM.offeror.offerorSetRemoteDescriptionButton.classList.remove("hide")
+        DOM.offeror.offerorSetRemoteDescriptionButton.classList.remove("show")
+    })
+}
+export function handleIceCandidates(data){
+    console.log(data)
+    if(pc.remoteDescription){
+        console.log("we are in if")
+        try{
+            data.candidates.forEach(candidate => {
+                pc.addIceCandidate(candidate)
+                uiUtils.LogToCustomConsole("Added and ice candidate from the other peer, to you pc object")
+            });
+        }
+        catch(error){
+            console.log("Error trying to add an ice candidate to the pc object", error)
+        }
+    } else {
+        console.log("we are in if")
+        // create a tempo buffer
+        data.candidates.forEach(candidate => {
+            iceCandidateReceivedBuffer.push(candidate)
+            uiUtils.LogToCustomConsole("Added ice candidate in your temp buff")
+        })
+    }
 }

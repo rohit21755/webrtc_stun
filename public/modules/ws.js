@@ -63,7 +63,7 @@ export function sendAnswer(answer){
     const message = {
         label: constants.labels.WEBRTC_PROCESS,
         data: {
-            type: constants.Type.WEB_RTC,
+            type: constants.Type.WEB_RTC.ANSWER,
             answer,
             otherUserId: state.getState().otherUserId
         }
@@ -72,8 +72,9 @@ export function sendAnswer(answer){
 }
 
 export function sendIceCandidates(arrayoficecandidates){
+    
     const message = {
-        label: constants.labels.NORMAL_SERVER_PROCESS,
+        label: constants.labels.WEBRTC_PROCESS,
         data:{
             type: constants.Type.WEB_RTC.ICE_CANDIDATE,
             candidates: arrayoficecandidates,
@@ -87,7 +88,7 @@ export function sendIceCandidates(arrayoficecandidates){
 function handleMessage(message) {
    
     const resp = JSON.parse(message.data)
-   
+    console.log(resp)
     switch(resp.label){
         case constants.labels.NORMAL_SERVER_PROCESS:
             console.log(resp.data)
@@ -104,14 +105,23 @@ function handleMessage(message) {
 
 // webrtc server processing
 function webRTCServerProcessing(data){
+    console.log(data)
     switch(data.type){
         case constants.Type.WEB_RTC.OFFER:
             webrtcHandler.handleOffer(data)
+            break;
+        case constants.Type.WEB_RTC.ANSWER:
+            webrtcHandler.handleAnswer(data)
+            break;    
+        case constants.Type.WEB_RTC.ICE_CANDIDATE:
+            console.log("calling ice candidate")
+            webrtcHandler.handleIceCandidates(data)
             break;
         default:
             console.log("Unknown data type", data.type)
     }
 }
+
 
 // normal server processing
 function normalServerProcessing(data) {

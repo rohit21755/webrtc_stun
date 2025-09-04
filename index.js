@@ -2,7 +2,6 @@ import express from 'express'
 import { WebSocket, WebSocketServer } from 'ws'
 import http from "http"
 import { Type, labels } from './constant.js';
-import { constants } from 'buffer';
 let app = express();
 app.use(express.static("public"))
 app.use(express.json())
@@ -280,24 +279,29 @@ function exitRoomHandler(data){
 //>>>>> WEBRTC SERVER
 
 
-function webRTCServerProcessing(data){
-    // process the webrtc process
-    switch(data.type){
+function webRTCServerProcessing(data) {
+    console.log(data)
+    // process the WebRTC message, based on its type
+    switch(data.type) {
+        // OFFER
         case Type.WEB_RTC.OFFER:
-            processOffer(data);
-            break;
+            signalMessageToOtherUser(data);
+            break; 
+        // ANSWER
         case Type.WEB_RTC.ANSWER:
-            processAnswer(data);
-            break;
+            signalMessageToOtherUser(data);
+            break; 
+        // ICE CANDIDATES
         case Type.WEB_RTC.ICE_CANDIDATE:
-            processIce(data);
-            break;
-        default:
-            console.log("Unknown data type:", data.type)
-            break;
+            signalMessageToOtherUser(data);
+            break; 
+        // catch-all
+        default: 
+            console.log("Unknown data type: ", data.type);
     }
-}
-function processAnswer(data){
+};  
+function signalMessageToOtherUser(data){
+
     const { otherUserId } = data;
     const message = {
         label: labels.WEBRTC_PROCESS,
@@ -306,26 +310,6 @@ function processAnswer(data){
     sendWsMessageToUser(otherUserId, message)
     console.log("answer has been sent to the otheruser")
 }
-function processIce(data){
-    const { otherUserId } = data;
-    const message = {
-        label: labels.WEBRTC_PROCESS,
-        data: data  
-    }
-    sendWsMessageToUser(otherUserId, message)
-    console.log("ice has been sent to the otheruser")
-}
-
-function processOffer(data){
-    const { otherUserId } = data;
-    const message = {
-        label: labels.WEBRTC_PROCESS,
-        data: data  
-    }
-    sendWsMessageToUser(otherUserId, message)
-    console.log("offer has been sent to the otheruser")
-}
-
 // >>>>> WEBSOCKET GENERIC
 
 function sendWsMessageToUser(sendToUserId, message) {
